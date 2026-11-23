@@ -42,22 +42,16 @@
     .rays { transform-origin: 60px 56px; animation: spin 24s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Soft confetti dots in the background. */
-    .dots { position: absolute; inset: 0; pointer-events: none; z-index: -1; }
-    .dots span { position: absolute; border-radius: 50%; animation: bob 8s ease-in-out infinite; }
-    .dots span:nth-child(1) { width: 14px; height: 14px; background: var(--juice); right: 30%; top: 7%; }
-    .dots span:nth-child(2) { width: 22px; height: 22px; background: var(--sage); right: 10%; top: 14%; animation-delay: -2s; }
-    .dots span:nth-child(3) { width: 10px; height: 10px; background: var(--green); left: 18%; top: 11%; animation-delay: -4s; opacity: .7; }
-    .dots span:nth-child(4) { width: 18px; height: 18px; background: var(--blush); left: 6%; bottom: 14%; animation-delay: -1s; }
-    .dots span:nth-child(5) { width: 12px; height: 12px; background: var(--juice); right: 7%; bottom: 20%; animation-delay: -5s; opacity: .8; }
-    .dots span:nth-child(6) { width: 8px; height: 8px; background: var(--green); right: 38%; bottom: 7%; animation-delay: -3s; opacity: .6; }
+    /* Particle field: canvas fills <main>, above the page background, below the hero. */
+    .field { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; display: block; }
+    .soon.hero { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
 
 
   <main>
-    <div class="dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <canvas class="field" aria-hidden="true"></canvas>
 
     <section class="hero soon">
       <div class="hero__stack" aria-hidden="true">
@@ -105,5 +99,145 @@
   </main>
 
 
+  <script>
+  (function () {
+    'use strict';
+    var canvas = document.querySelector('.field');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    /* ---- Tunables ---- */
+    var AREA_PER_PARTICLE = 14500;  /* px^2 per particle: ~70 on 1280x800, ~26 on 375x812 */
+    var MIN_COUNT = 26, MAX_COUNT = 80;
+    var REPEL_RADIUS = 140;         /* px */
+    var REPEL_STRENGTH = 2.4;       /* push strength right at the cursor (higher = stronger) */
+    var DRIFT_SPEED = 0.28;         /* px/frame at 60fps, typical wander speed */
+    var TURN = 0.04;                /* how fast the wander heading changes (rad/frame) */
+    var EASE = 0.025;               /* how quickly velocity settles back to drift (per frame) */
+    var DPR_CAP = 2;
+
+    var COLORS = ['#E8862E', '#C9D6C4', '#EBCFBD', '#17332F'];
+    var ALPHAS = [0.6, 0.85, 0.9, 0.16];            /* green kept faint */
+    var PICK = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3];      /* weighted colour choice, green ~10% */
+
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var W = 0, H = 0, dpr = 1, n = 0;
+    var X, Y, VX, VY, R, HD, SP, CI;
+    var px = 0, py = 0, active = false;
+    var rect = canvas.getBoundingClientRect();
+    var raf = 0, last = 0;
+
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+
+    function seed(i) {
+      var big = Math.random() < 0.12;
+      X[i] = Math.random() * W;
+      Y[i] = Math.random() * H;
+      R[i] = big ? rnd(10, 14) : 3 + Math.pow(Math.random(), 1.8) * 7;
+      HD[i] = Math.random() * 6.2832;
+      SP[i] = DRIFT_SPEED * rnd(0.5, 1.4) * (big ? 0.6 : 1);
+      VX[i] = Math.cos(HD[i]) * SP[i];
+      VY[i] = Math.sin(HD[i]) * SP[i];
+      CI[i] = PICK[(Math.random() * PICK.length) | 0];
+    }
+
+    function resize() {
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      var oldW = W, oldH = H;
+      dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      W = w; H = h;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      rect = canvas.getBoundingClientRect();
+      var want = Math.max(MIN_COUNT, Math.min(MAX_COUNT, Math.round(W * H / AREA_PER_PARTICLE)));
+      if (want !== n || !X) {
+        n = want;
+        X = new Float32Array(n); Y = new Float32Array(n);
+        VX = new Float32Array(n); VY = new Float32Array(n);
+        R = new Float32Array(n); HD = new Float32Array(n);
+        SP = new Float32Array(n); CI = new Uint8Array(n);
+        for (var i = 0; i < n; i++) seed(i);
+      } else if (oldW && oldH) {
+        var sx = W / oldW, sy = H / oldH;
+        for (var j = 0; j < n; j++) { X[j] *= sx; Y[j] *= sy; }
+      }
+      draw();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < n; i++) {
+        var c = CI[i];
+        ctx.globalAlpha = ALPHAS[c];
+        ctx.fillStyle = COLORS[c];
+        ctx.beginPath();
+        ctx.arc(X[i], Y[i], R[i], 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function frame(t) {
+      raf = requestAnimationFrame(frame);
+      var dt = last ? (t - last) / 16.667 : 1;
+      last = t;
+      if (dt > 3) dt = 3;
+      var r2 = REPEL_RADIUS * REPEL_RADIUS;
+      var ease = 1 - Math.pow(1 - EASE, dt);
+      for (var i = 0; i < n; i++) {
+        /* wander: heading random-walks, velocity eases toward it */
+        HD[i] += (Math.random() - 0.5) * TURN * 2 * dt;
+        VX[i] += (Math.cos(HD[i]) * SP[i] - VX[i]) * ease;
+        VY[i] += (Math.sin(HD[i]) * SP[i] - VY[i]) * ease;
+        /* cursor repulsion: stronger the closer it is */
+        if (active) {
+          var dx = X[i] - px, dy = Y[i] - py, d2 = dx * dx + dy * dy;
+          if (d2 < r2) {
+            var d = Math.sqrt(d2) || 0.001;
+            var k = 1 - d / REPEL_RADIUS;
+            var f = REPEL_STRENGTH * k * k * 0.72 * dt / d;
+            VX[i] += dx * f;
+            VY[i] += dy * f;
+          }
+        }
+        X[i] += VX[i] * dt;
+        Y[i] += VY[i] * dt;
+        /* wrap off the edges */
+        var m = R[i] + 2;
+        if (X[i] < -m) X[i] = W + m; else if (X[i] > W + m) X[i] = -m;
+        if (Y[i] < -m) Y[i] = H + m; else if (Y[i] > H + m) Y[i] = -m;
+      }
+      draw();
+    }
+
+    function start() { if (!raf && !reduce && !document.hidden) { last = 0; raf = requestAnimationFrame(frame); } }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+    function onMove(e) {
+      px = e.clientX - rect.left;
+      py = e.clientY - rect.top;
+      active = true;
+    }
+    function off() { active = false; }
+
+    resize();
+    window.addEventListener('resize', resize);
+    if (reduce) return;
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerdown', onMove, { passive: true });
+    window.addEventListener('pointerup', function (e) { if (e.pointerType !== 'mouse') off(); }, { passive: true });
+    window.addEventListener('pointercancel', off, { passive: true });
+    document.documentElement.addEventListener('pointerleave', off, { passive: true });
+    window.addEventListener('blur', off);
+    window.addEventListener('scroll', function () { rect = canvas.getBoundingClientRect(); }, { passive: true });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) { stop(); off(); } else start(); });
+    start();
+  })();
+  </script>
 </body>
 </html>
