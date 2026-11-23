@@ -322,16 +322,17 @@ main { position: relative; }
 
 /* Draft-only switcher for comparing the line styles. */
 .switcher {
-  position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 70;
   display: grid; gap: 6px; justify-items: center;
   max-width: calc(100vw - 16px);
   padding: 8px 10px 9px;
   border-radius: 20px;
+  border: 1.5px solid var(--juice);
   background: var(--ink); color: var(--paper);
   box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .55);
 }
-.switcher__label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .75; white-space: nowrap; }
+.switcher__label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .9; white-space: nowrap; }
 .switcher__row { display: flex; gap: 4px; }
 .switcher button {
   font: inherit; font-size: 13px; font-weight: 600;
