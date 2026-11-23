@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Dr. Jaskeet — Coming soon</title>
-  <meta name="description" content="Dr. Jaskeet, physiotherapist. Something good is on its way: a story told in stills. Coming soon.">
+  <meta name="description" content="Coming soon.">
   <meta name="theme-color" content="#F6F0E6">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317332F'/%3E%3Ccircle cx='32' cy='27' r='9' fill='%23E8862E'/%3E%3Cpath d='M32 36v16' stroke='%23F6F0E6' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,53 +12,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Coming-soon page: reuses the story site's opening layout, prints and colours. */
-    body { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
-    .top { position: absolute; }
-    main { flex: 1; display: grid; position: relative; overflow: hidden; }
-    .soon.hero { min-height: 0; width: 100%; padding-bottom: 40px; align-content: center; }
-
-    .pill {
-      display: inline-flex; align-items: center; gap: 10px;
-      width: fit-content;
-      padding: 8px 16px 8px 12px;
-      border-radius: 999px;
-      background: var(--white);
-      box-shadow: 0 1px 0 rgba(28, 43, 40, .08), 0 8px 20px -12px rgba(28, 43, 40, .4);
-      font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
-      color: var(--juice-deep);
+    /* Coming-soon page: only the words "Coming soon", with the story site's prints and colours. */
+    body { min-height: 100vh; min-height: 100svh; display: grid; }
+    main { display: grid; position: relative; overflow: hidden; }
+    .soon.hero {
+      min-height: 0; width: 100%;
+      padding: 40px var(--gutter);
+      grid-template-columns: 1fr;
+      justify-items: center; align-content: center;
+      gap: clamp(28px, 5vh, 56px);
+      text-align: center;
     }
-    .pill i {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--juice);
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(232, 134, 46, .55); }
-      50% { box-shadow: 0 0 0 9px rgba(232, 134, 46, 0); }
-    }
-
-    .signoff {
-      font-family: var(--hand);
-      font-size: clamp(26px, 3.4vw, 34px);
-      line-height: 1.1;
-      color: var(--green);
-      transform: rotate(-2deg);
-      transform-origin: left center;
-      margin-top: 6px;
-    }
-
-    /* Gentle entrance, then the prints bob like they're pinned to a string. */
-    .soon .hero__text > * { animation: rise .9s cubic-bezier(.2, .7, .2, 1) both; }
-    .soon .hero__text > :nth-child(2) { animation-delay: .1s; }
-    .soon .hero__text > :nth-child(3) { animation-delay: .2s; }
-    .soon .hero__text > :nth-child(4) { animation-delay: .32s; }
+    .soon h1 { font-size: clamp(54px, 13vw, 132px); animation: rise .9s cubic-bezier(.2, .7, .2, 1) .5s both; }
+    .soon .hero__stack { max-width: 440px; width: 100%; height: clamp(230px, 62vw, 330px); margin: 0; }
+    .soon .hero__stack .print { width: 44%; padding-bottom: clamp(26px, 6vw, 38px); }
+    .soon .print--a { left: 2%; top: 8%; }
+    .soon .print--b { left: 28%; top: 0; }
+    .soon .print--c { right: 2%; left: auto; top: 12%; }
     @keyframes rise { from { opacity: 0; translate: 0 18px; } }
 
+    /* The prints drop in, then bob gently. */
     .soon .print { animation: drop .9s cubic-bezier(.2, .8, .2, 1) both, bob 6s ease-in-out infinite; }
-    .soon .print--a { animation-delay: .35s, 1.3s; }
-    .soon .print--b { animation-delay: .5s, 1.9s; animation-duration: .9s, 7s; }
-    .soon .print--c { animation-delay: .65s, 1.6s; animation-duration: .9s, 6.5s; }
+    .soon .print--a { animation-delay: .1s, 1.1s; }
+    .soon .print--b { animation-delay: .25s, 1.7s; animation-duration: .9s, 7s; }
+    .soon .print--c { animation-delay: .4s, 1.4s; animation-duration: .9s, 6.5s; }
     @keyframes drop { from { opacity: 0; translate: 0 -40px; } }
     @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
 
@@ -67,40 +44,22 @@
 
     /* Soft confetti dots in the background. */
     .dots { position: absolute; inset: 0; pointer-events: none; z-index: -1; }
-    .dots span {
-      position: absolute; border-radius: 50%;
-      animation: bob 8s ease-in-out infinite;
-    }
+    .dots span { position: absolute; border-radius: 50%; animation: bob 8s ease-in-out infinite; }
     .dots span:nth-child(1) { width: 14px; height: 14px; background: var(--juice); right: 30%; top: 7%; }
     .dots span:nth-child(2) { width: 22px; height: 22px; background: var(--sage); right: 10%; top: 14%; animation-delay: -2s; }
-    .dots span:nth-child(3) { width: 10px; height: 10px; background: var(--green); left: 46%; top: 11%; animation-delay: -4s; opacity: .7; }
-    .dots span:nth-child(4) { width: 18px; height: 18px; background: var(--blush); left: 5%; bottom: 12%; animation-delay: -1s; }
-    .dots span:nth-child(5) { width: 12px; height: 12px; background: var(--juice); right: 6%; bottom: 20%; animation-delay: -5s; opacity: .8; }
+    .dots span:nth-child(3) { width: 10px; height: 10px; background: var(--green); left: 18%; top: 11%; animation-delay: -4s; opacity: .7; }
+    .dots span:nth-child(4) { width: 18px; height: 18px; background: var(--blush); left: 6%; bottom: 14%; animation-delay: -1s; }
+    .dots span:nth-child(5) { width: 12px; height: 12px; background: var(--juice); right: 7%; bottom: 20%; animation-delay: -5s; opacity: .8; }
     .dots span:nth-child(6) { width: 8px; height: 8px; background: var(--green); right: 38%; bottom: 7%; animation-delay: -3s; opacity: .6; }
-
-    .foot { padding-bottom: 24px; }
-    @media (min-width: 900px) {
-      .soon.hero { padding-top: calc(var(--header) + 16px); }
-    }
   </style>
 </head>
 <body>
 
-  <header class="top">
-    <span class="wordmark">Dr. Jaskeet<span>Physiotherapist</span></span>
-  </header>
 
   <main>
     <div class="dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
 
     <section class="hero soon">
-      <div class="hero__text">
-        <p class="pill"><i></i>Coming soon</p>
-        <h1>Something good<br><em>is on its way.</em></h1>
-        <p class="lede">I'm a physiotherapist, and I'm putting together a few stories from my working days. There's a flower, a glass of orange juice, and a lot of happy first steps.</p>
-        <p class="signoff">See you here very soon!</p>
-      </div>
-
       <div class="hero__stack" aria-hidden="true">
         <figure class="print print--a">
           <div class="print__img tone-sage">
@@ -114,7 +73,6 @@
               <circle cx="60" cy="55" r="8" class="dot"/>
             </svg>
           </div>
-          <figcaption>a flower</figcaption>
         </figure>
         <figure class="print print--b">
           <div class="print__img tone-juice">
@@ -130,7 +88,6 @@
               <path d="M60 30v12M46 36l5 9M74 36l-5 9" class="ln"/>
             </svg>
           </div>
-          <figcaption>cheers!</figcaption>
         </figure>
         <figure class="print print--c">
           <div class="print__img tone-blush">
@@ -140,16 +97,13 @@
               <path d="M14 122c18-10 34-10 46 0s30 10 46 0" class="ln"/>
             </svg>
           </div>
-          <figcaption>good days</figcaption>
         </figure>
       </div>
+
+      <h1>Coming <em>soon</em></h1>
     </section>
   </main>
 
-  <footer class="foot">
-    <span>© 2026 Dr. Jaskeet</span>
-    <span>drjaskeet.com</span>
-  </footer>
 
 </body>
 </html>
