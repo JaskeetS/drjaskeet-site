@@ -238,7 +238,16 @@
     <a href="#hero">Back to the start ↑</a>
   </footer>
 
-  <div class="draft" role="note">Sample draft · text and photos are placeholders</div>
+  <!-- Draft only: lets you compare the line styles. Remove at launch. -->
+  <div class="switcher" role="group" aria-label="Line style">
+    <span class="switcher__label">Sample draft · try a line style</span>
+    <div class="switcher__row">
+      <button type="button" data-line="thread">Thread</button>
+      <button type="button" data-line="steps">Footsteps</button>
+      <button type="button" data-line="spine">Timeline</button>
+      <button type="button" data-line="pen">Pen</button>
+    </div>
+  </div>
 
   <!-- Line drawings used inside the empty photo frames -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
