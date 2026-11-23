@@ -222,79 +222,70 @@ h1 em, h2 em { color: var(--juice-deep); font-weight: 400; }
   .hero__stack figcaption { font-size: 24px; padding: 12px 4px 14px; }
 }
 
-/* ── Chapters (sticky photo + scrolling text) ── */
+/* ── Chapters: pictures in a zigzag, joined by the doodle line ── */
 .chapter {
   max-width: calc(var(--max) + 2 * var(--gutter));
   margin: 0 auto;
   padding: 72px var(--gutter) 0;
 }
-.chapter__head { display: grid; gap: 10px; margin-bottom: 20px; }
+.chapter__head { display: grid; gap: 10px; }
 
-.stage {
-  position: sticky;
-  top: var(--header);
-  z-index: 2;
-  height: 48vh; height: 48svh;
-  margin: 0 calc(-1 * var(--gutter));
-  padding: 14px var(--gutter) 22px;
-  background: linear-gradient(var(--paper) 90%, rgba(246, 240, 230, 0));
+.beats {
+  --lane: 48px;          /* strip kept clear beside the text for the line, on phones */
   display: grid;
-  grid-template-rows: minmax(0, 1fr);
-  justify-items: center;
+  gap: 96px;
+  padding: 44px 0 110px;
 }
-.still {
-  grid-area: 1 / 1;
-  height: 100%;
-  width: auto;
-  max-width: 100%;
-  aspect-ratio: 4 / 5.9;
-  display: flex; flex-direction: column;
-  opacity: 0;
-  transform: rotate(-5deg) scale(.94);
-  transition: opacity .55s ease, transform .7s cubic-bezier(.2, .7, .2, 1);
+.beat { display: grid; gap: 36px; justify-items: center; }
+.beat .print {
+  position: relative; z-index: 2;   /* above the line, so it passes behind each picture */
+  width: min(74%, 300px);
+  --r: -2.5deg;
 }
-.still .print__img { aspect-ratio: auto; flex: 1; min-height: 0; }
-.still.is-active { opacity: 1; transform: rotate(-2deg) scale(1); }
-.still:nth-child(even).is-active { transform: rotate(2deg) scale(1); }
+.beat[data-side="right"] .print { --r: 2.5deg; }
+.beat .print.reveal { opacity: 0; transform: rotate(calc(var(--r) * 3)) scale(.94); }
+.beat .print.reveal.in { opacity: 1; transform: rotate(var(--r)); }
+.beat .print.is-reached { animation: nudge .7s ease; }
+@keyframes nudge { 35% { rotate: 2.4deg; } 70% { rotate: -1.2deg; } }
 
-.step {
-  min-height: 62vh; min-height: 62svh;
-  display: flex; align-items: center;
-}
-.step:last-child { min-height: 70vh; min-height: 70svh; }
-.step p {
+.beat__text {
   font-family: var(--serif);
   font-size: clamp(24px, 3.4vw, 40px);
   line-height: 1.22;
   letter-spacing: -.01em;
-  max-width: 20ch;
-  opacity: .22;
-  transform: translateY(10px);
-  transition: opacity .5s ease, transform .5s ease;
+  justify-self: start;
+  max-width: calc(20ch + var(--lane));
 }
-.step p em { color: var(--juice-deep); }
-.step.is-active p { opacity: 1; transform: none; }
+.beat__text em { color: var(--juice-deep); }
+.beat[data-side="left"] .beat__text { padding-left: var(--lane); }
+.beat[data-side="right"] .beat__text { padding-right: var(--lane); }
 
 @media (min-width: 900px) {
   .chapter { padding-top: 120px; }
-  .chapter__head { margin-bottom: 0; }
-  .scrolly { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-  .stage {
-    top: 0;
-    height: 100vh;
-    margin: 0; padding: calc(var(--header) + 24px) 0 40px;
-    background: none;
-  }
-  .stage { align-items: center; }
-  .still { height: min(100%, 620px); }
-  .step { min-height: 78vh; }
-  .step:last-child { min-height: 100vh; }
-  .chapter--flip .stage { order: 2; }
-  .chapter--flip .chapter__head { text-align: right; justify-items: end; }
+  .chapter__head { text-align: right; justify-items: end; }
+  .chapter--flip .chapter__head { text-align: left; justify-items: start; }
+  .beats { gap: 170px; padding: 56px 0 170px; }
+  .beat { grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .beat .print { width: min(76%, 400px); }
+  .beat[data-side="right"] .print { order: 2; }
+  .beat[data-side] .beat__text { padding: 0; max-width: 20ch; justify-self: center; }
 }
+
+/* ── The doodle line ── */
+main { position: relative; }
+.trail { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; overflow: visible; }
+.trail path {
+  fill: none;
+  stroke: var(--juice);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trail__dot { fill: var(--juice-deep); transition: opacity .3s ease; }
 
 /* ── Interlude (dark, words light up as you scroll) ── */
 .interlude {
+  position: relative; z-index: 2;   /* the doodle line slips in behind this block */
   background: var(--green);
   color: var(--paper);
   height: 220vh;
@@ -400,7 +391,7 @@ h1 em, h2 em { color: var(--juice-deep); font-weight: 400; }
 .hero .reveal:nth-child(3) { transition-delay: .22s; }
 
 /* No JavaScript, or motion turned off: show everything, animate nothing. */
-.no-js .reveal, .no-js .still, .no-js .step p, .no-js .interlude__line .w { opacity: 1; transform: none; }
+.no-js .reveal, .no-js .interlude__line .w { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }

@@ -25,6 +25,7 @@
   </header>
 
   <main>
+    <svg class="trail" id="trail" aria-hidden="true"></svg>
 
     <!-- ───────────── Opening ───────────── -->
     <section class="hero" id="hero">
@@ -55,7 +56,7 @@
         </figure>
       </div>
 
-      <div class="scrollcue" aria-hidden="true"><span></span>scroll</div>
+      <div class="scrollcue" aria-hidden="true" data-stop="start" data-side="right"><span></span>scroll</div>
     </section>
 
     <!-- ───────────── Chapter one ───────────── -->
@@ -65,52 +66,50 @@
         <h2 class="reveal">The flower</h2>
       </header>
 
-      <div class="scrolly">
-        <div class="stage" aria-hidden="true">
-          <figure class="print still is-active">
+      <div class="beats">
+        <article class="beat" data-side="left">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-dusk">
               <svg viewBox="0 0 120 150"><use href="#art-door"/></svg>
               <span class="tag">Still 01 · your photo here</span>
             </div>
             <figcaption>before: the closed door</figcaption>
           </figure>
-          <figure class="print still">
+          <p class="beat__text reveal">Before her knee replacement, Mrs. P. had stopped stepping out of her home altogether.</p>
+        </article>
+
+        <article class="beat" data-side="right">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-sage">
               <svg viewBox="0 0 120 150"><use href="#art-steps"/></svg>
               <span class="tag">Still 02 · your photo here</span>
             </div>
             <figcaption>our walk downstairs</figcaption>
           </figure>
-          <figure class="print still">
+          <p class="beat__text reveal">On paper, my job after the surgery was her knee. My real job was the front door. So we went downstairs for a walk, together.</p>
+        </article>
+
+        <article class="beat" data-side="left">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-blush">
               <svg viewBox="0 0 120 150"><use href="#art-flower"/></svg>
               <span class="tag">Still 03 · your photo here</span>
             </div>
             <figcaption>a flower for Mrs. P.</figcaption>
           </figure>
-          <figure class="print still">
+          <p class="beat__text reveal">On one of those walks, I gave her a flower.</p>
+        </article>
+
+        <article class="beat" data-side="right">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-juice">
               <svg viewBox="0 0 120 150"><use href="#art-sun"/></svg>
               <span class="tag">Still 04 · your photo here</span>
             </div>
             <figcaption>75, and sprinting</figcaption>
           </figure>
-        </div>
-
-        <div class="steps">
-          <div class="step" data-still="0">
-            <p>Before her knee replacement, Mrs. P. had stopped stepping out of her home altogether.</p>
-          </div>
-          <div class="step" data-still="1">
-            <p>On paper, my job after the surgery was her knee. My real job was the front door. So we went downstairs for a walk, together.</p>
-          </div>
-          <div class="step" data-still="2">
-            <p>On one of those walks, I gave her a flower.</p>
-          </div>
-          <div class="step" data-still="3">
-            <p>She is 75 now. She doesn't walk anymore. <em>She sprints.</em></p>
-          </div>
-        </div>
+          <p class="beat__text reveal">She is 75 now. She doesn't walk anymore. <em>She sprints.</em></p>
+        </article>
       </div>
     </section>
 
@@ -121,47 +120,44 @@
         <h2 class="reveal">Orange juice</h2>
       </header>
 
-      <div class="scrolly">
-        <div class="stage" aria-hidden="true">
-          <figure class="print still is-active">
+      <div class="beats">
+        <article class="beat" data-side="right">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-sage">
               <svg viewBox="0 0 120 150"><use href="#art-table"/></svg>
               <span class="tag">Still 05 · your photo here</span>
             </div>
             <figcaption>not a treatment table</figcaption>
           </figure>
-          <figure class="print still">
+          <p class="beat__text reveal">Not every session ends on a treatment table.</p>
+        </article>
+
+        <article class="beat" data-side="left">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-juice">
               <svg viewBox="0 0 120 150"><use href="#art-cheers"/></svg>
               <span class="tag">Still 06 · your photo here</span>
             </div>
             <figcaption>cheers, on orange juice</figcaption>
           </figure>
-          <figure class="print still">
+          <p class="beat__text reveal">One morning, it ended at breakfast with my client. Two glasses of orange juice, and a cheers.</p>
+        </article>
+
+        <article class="beat" data-side="right">
+          <figure class="print reveal" data-stop>
             <div class="print__img tone-blush">
               <svg viewBox="0 0 120 150"><use href="#art-sun"/></svg>
               <span class="tag">Still 07 · your photo here</span>
             </div>
             <figcaption>an ordinary morning</figcaption>
           </figure>
-        </div>
-
-        <div class="steps">
-          <div class="step" data-still="0">
-            <p>Not every session ends on a treatment table.</p>
-          </div>
-          <div class="step" data-still="1">
-            <p>One morning, it ended at breakfast with my client. Two glasses of orange juice, and a cheers.</p>
-          </div>
-          <div class="step" data-still="2">
-            <p>That's the part of recovery nobody writes in the notes: <em>getting your ordinary mornings back.</em></p>
-          </div>
-        </div>
+          <p class="beat__text reveal">That's the part of recovery nobody writes in the notes: <em>getting your ordinary mornings back.</em></p>
+        </article>
       </div>
     </section>
 
     <!-- ───────────── Interlude ───────────── -->
-    <section class="interlude" id="meaning">
+    <section class="interlude" id="meaning" data-stop="end">
       <div class="interlude__pin">
         <p class="eyebrow">What it means to be a physiotherapist</p>
         <p class="interlude__line" id="wordReveal">It means I get to be there for the first step, the bad day, and the day you no longer need me.</p>
